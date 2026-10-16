@@ -11,7 +11,6 @@ import {
 import { gerarAbordagemDeFormulario } from "@/lib/agent-engine/agent/abordagem-de-formulario";
 import { llmEdgeConfigFromEnv } from "@/lib/agent-engine/edge/llm/credentials";
 import { assertServiceBoundarySupabase } from "@/lib/atendimento/origem";
-import { comSaida } from "./rodape-de-saida";
 import {
   proximoEnvioDaEsteiraFria,
   tetoDiarioDaEsteiraFria,
@@ -159,16 +158,6 @@ export async function sendNextCandidate(
       ? await prepararCandidatoNoEnvio(db, admin, c, cfg, queued)
       : queued;
   if (!p) return;
-  // O idioma da instalação decide a PALAVRA de saída. Uma consulta por envio, no
-  // mesmo caminho que já faz várias — e o envio é limitado a 1 por vez pelo
-  // ritmo anti-banimento, então não há volume aqui para otimizar.
-  const locale =
-    (
-      await db.query<{ locale: string | null }>(
-        "select locale from organizations where id=$1",
-        [c.organization_id],
-      )
-    ).rows[0]?.locale ?? null;
   const boundary = parseServiceBoundary(p.service_boundary);
   if (!boundary || !p.contact_id || !p.conversation_id)
     // DO CANDIDATO: este não tem contato/conversa resolvidos. O próximo pode ter.
@@ -272,13 +261,9 @@ export async function sendNextCandidate(
       {
         conversation_id: p.conversation_id,
         type: "text",
-        // A SAÍDA vai junto da primeira mensagem, e é montada aqui — não pedida
-        // ao modelo. Sem ela, a saída que a pessoa usa é "Denunciar spam", que
-        // é invisível ao sistema e queima o número do CLIENTE que instalou.
-        // O idioma sai de `organizations.locale`: um rodapé em português numa
-        // instalação em espanhol oferece uma palavra que a pessoa não responde,
-        // e o detector de opt-out só reconhece a palavra ISOLADA.
-        body: comSaida(generated.texto, locale),
+        // Abertura personalizada da WX: somente o texto gerado pelo agente.
+        // O bloqueio por pedido de parada continua na ingestão das respostas.
+        body: generated.texto,
       },
     );
     const sent = ["sent", "delivered", "read"].includes(message.status);
