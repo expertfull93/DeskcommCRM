@@ -41,7 +41,8 @@ const ALL = "__all__";
  * cabeçalho some abaixo de `md` e o rótulo vem do `data-rotulo` da própria
  * célula. Só classes `max-md:` — no computador é a tabela de sempre.
  */
-const CELULA_DE_NUMERO = "text-right tabular-nums max-md:p-0 max-md:text-left max-md:before:mr-1 max-md:before:text-muted-foreground max-md:before:content-[attr(data-rotulo)]";
+const CELULA_DE_NUMERO =
+  "text-right tabular-nums max-md:p-0 max-md:text-left max-md:before:mr-1 max-md:before:text-muted-foreground max-md:before:content-[attr(data-rotulo)]";
 
 function attendantLabel(a: AttendantMetric, t: (texto: string) => string): string {
   return a.name ?? a.email ?? `${t("Atendente")} ${a.user_id.slice(0, 8)}`;
@@ -128,9 +129,35 @@ export function MetricsClient({ canCompare, currentUserId }: Props) {
   const metrics = data.data;
   const funnelTotal = metrics.funnel.reduce((acc, s) => acc + s.count, 0);
   const maxCount = Math.max(1, ...metrics.funnel.map((s) => s.count));
+  const totals = metrics.attendants.reduce(
+    (sum, attendant) => ({
+      won: sum.won + attendant.won,
+      lost: sum.lost + attendant.lost,
+      conversations: sum.conversations + attendant.conversations_handled,
+    }),
+    { won: 0, lost: 0, conversations: 0 },
+  );
+  const closed = totals.won + totals.lost;
+  const summary = [
+    { label: "Negócios abertos", value: funnelTotal, note: "No funil agora" },
+    { label: "Ganhos atribuídos", value: totals.won, note: "No período exibido" },
+    {
+      label: "Atendimentos atribuídos",
+      value: totals.conversations,
+      note: "Soma por atendente; uma conversa pode ter mais de um",
+    },
+    {
+      label: "Taxa de ganho",
+      value: closed > 0 ? `${((totals.won / closed) * 100).toFixed(1)}%` : "—",
+      note:
+        closed > 0
+          ? "Ganhos entre ganhos e perdidos atribuídos"
+          : "Ainda sem desfechos atribuídos no período",
+    },
+  ];
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="julia-metrics julia-metrics-body">
       {canCompare ? (
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm text-muted-foreground">{t("Atendente")}</span>
@@ -152,6 +179,16 @@ export function MetricsClient({ canCompare, currentUserId }: Props) {
           </Select>
         </div>
       ) : null}
+
+      <section aria-label={t("Resumo do desempenho")} className="julia-metrics-summary">
+        {summary.map((item) => (
+          <article key={item.label} className="julia-stat">
+            <h2 className="julia-stat-label">{t(item.label)}</h2>
+            <p className="julia-stat-value">{item.value}</p>
+            <p className="julia-stat-note">{t(item.note)}</p>
+          </article>
+        ))}
+      </section>
 
       {/* Acima do funil e da performance de propósito: é o número do sistema
           inteiro, ao qual as métricas de área se subordinam (doutrina §3.6).
@@ -196,9 +233,9 @@ export function MetricsClient({ canCompare, currentUserId }: Props) {
             metrics.funnel.map((s) => (
               <div key={s.stage_id} className="flex items-center gap-3">
                 <span className="w-24 shrink-0 truncate text-sm md:w-40">{s.stage_name}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                <div className="julia-funnel-track flex-1">
                   <div
-                    className="h-full rounded-full bg-primary transition-[width]"
+                    className="julia-funnel-fill"
                     style={{ width: `${(s.count / maxCount) * 100}%` }}
                   />
                 </div>

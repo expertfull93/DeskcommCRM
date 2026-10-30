@@ -930,6 +930,14 @@ export const NAV_CATALOG = [
 
   // ---- Organização — conta, empresa, acesso ----
   {
+    href: "/app/settings/aparencia",
+    label: "Temas de Jul-IA",
+    description: "Escolha o tema, as cores e o modo claro ou escuro deste navegador.",
+    icon: "Palette",
+    group: "organizacao",
+    section: "Sua conta",
+  },
+  {
     href: "/app/settings/profile",
     label: "Perfil",
     description: "Seu nome, idioma, fuso horário e avatar.",

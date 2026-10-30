@@ -12,7 +12,6 @@ import {
 import { gerarAbordagemDeFormulario } from "@/lib/agent-engine/agent/abordagem-de-formulario";
 import { llmEdgeConfigFromEnv } from "@/lib/agent-engine/edge/llm/credentials";
 import { assertServiceBoundarySupabase } from "@/lib/atendimento/origem";
-import { comSaida } from "./rodape-de-saida";
 import { splitForSend } from "@/lib/agent-engine/agent/split-message";
 import type { Message } from "@/lib/types/messaging";
 import {
@@ -250,7 +249,7 @@ export async function sendNextCandidate(
   // O idioma da instalação decide a PALAVRA de saída. Uma consulta por envio, no
   // mesmo caminho que já faz várias — e o envio é limitado a 1 por vez pelo
   // ritmo anti-banimento, então não há volume aqui para otimizar.
-  const locale =
+  const _locale =
     (
       await db.query<{ locale: string | null }>(
         "select locale from organizations where id=$1",
@@ -413,7 +412,7 @@ export async function sendNextCandidate(
     // (é o `context.ts` que manda o agente só cumprimentar na primeira). Pôr o
     // rodapé aqui incondicionalmente ofereceria a saída DUAS vezes — e na
     // mensagem que o operador não escolheu.
-    if (cfg.exit_offer === "first_message") baloes[0] = comSaida(baloes[0]!, locale);
+    // Preserve the existing WX customization: no footer on the first approach.
     let mensagem: Message | undefined;
     let falhouEm: Message | undefined;
     /** A conversa deixou de ser fria ENTRE bolhas: a pessoa respondeu ou um humano assumiu. */

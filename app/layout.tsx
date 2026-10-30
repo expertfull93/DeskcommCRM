@@ -27,6 +27,8 @@ import { ThemeProvider } from "@/lib/theme";
 import { Providers } from "./providers";
 import { PublicEnvScript } from "./public-env-script";
 import "./globals.css";
+import "./julia-visual.css";
+import { APPEARANCE_CSS, APPEARANCE_INIT_SCRIPT } from "@/lib/appearance";
 
 // Fontes versionadas em app/fonts/ (origem e licença no README de lá): o
 // next/font/google as baixava durante o build, e o build caía quando o Google
@@ -339,6 +341,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={`${atkinson.variable} ${plexMono.variable}`}
     >
       <head>
+        <style id="julia-theme-palettes">{APPEARANCE_CSS}</style>
+        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_INIT_SCRIPT }} />
         {/* Primeiro de tudo: a cor da instalação, antes do CSS e do script de tema. */}
         <EstiloDaMarca />
         <EstiloCssPersonalizado />

@@ -1,0 +1,290 @@
+/* Opt-in, browser-local visual layer. Status colours keep their meaning. */
+html[data-julia-appearance]:not([data-julia-appearance="default"]) body {
+  --color-bg: #f8f7fc;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f0edf8;
+  --color-text: #211a32;
+  --color-text-muted: #635b76;
+  --color-text-subtle: #716781;
+  --color-border: #e2dceb;
+  --color-border-strong: #c3b7d8;
+  --color-accent-50: #f5f3ff;
+  --color-accent-100: #ede9fe;
+  --color-accent-200: #ddd6fe;
+  --color-accent-300: #c4b5fd;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+  --color-accent-700: #6d28d9;
+  --color-accent-800: #5b21b6;
+  --color-accent-900: #4c1d95;
+  --color-accent-950: #2e1065;
+  --color-accent: #6d28d9;
+  --color-accent-fg: #ffffff;
+  --color-accent-soft: #ede9fe;
+  --color-accent-hover: #5b21b6;
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-accent-fg);
+  --secondary: var(--color-surface-elevated);
+  --secondary-foreground: var(--color-text);
+  --muted: var(--color-surface-elevated);
+  --muted-foreground: var(--color-text-muted);
+  --accent-foreground: var(--color-accent-fg);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-accent-400);
+}
+html[data-julia-appearance]:not([data-julia-appearance="default"])[data-theme="dark"] body {
+  --color-bg: #09090f;
+  --color-surface: #12121d;
+  --color-surface-elevated: #1c1b2b;
+  --color-overlay: rgba(0, 0, 0, 0.65);
+  --color-text: #f4f2fc;
+  --color-text-muted: #b1a9c4;
+  --color-text-subtle: #9c93b0;
+  --color-border: #302c43;
+  --color-border-strong: #554b70;
+  --color-accent: #a78bfa;
+  --color-accent-fg: #160d2b;
+  --color-accent-soft: #28203f;
+  --color-accent-hover: #c4b5fd;
+  --color-neutral-50: #f4f2fc;
+  --color-neutral-100: #e7e2f3;
+  --color-neutral-200: #c9c1d9;
+  --color-neutral-300: #b1a9c4;
+  --color-neutral-400: #9c93b0;
+  --color-neutral-500: #554b70;
+  --color-neutral-600: #302c43;
+  --color-neutral-700: #1c1b2b;
+  --color-neutral-800: #12121d;
+  --color-neutral-900: #09090f;
+  --color-neutral-950: #050508;
+}
+html[data-julia-appearance]:not([data-julia-appearance="default"]) body > div {
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+html[data-julia-appearance]:not([data-julia-appearance="default"]) aside,
+html[data-julia-appearance]:not([data-julia-appearance="default"]) [role="complementary"] {
+  background-color: var(--color-surface);
+}
+html[data-julia-appearance]:not([data-julia-appearance="default"]) nav a[aria-current="page"] {
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+html[data-julia-appearance]:not([data-julia-appearance="default"]) :focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+.julia-theme-option {
+  min-width: 0;
+  padding: 16px;
+  text-align: left;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+.julia-theme-option[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-soft);
+}
+.julia-theme-option:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+.julia-theme-preview {
+  display: flex;
+  gap: 12px;
+  height: 160px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--preview-border);
+  background: var(--preview-bg);
+}
+.julia-theme-preview-default {
+  --preview-bg: #faf9f6;
+  --preview-surface: #ffffff;
+  --preview-border: #e7e3da;
+  --preview-accent: #506d48;
+}
+.julia-theme-preview-violet {
+  --preview-bg: #09090f;
+  --preview-surface: #1c1b2b;
+  --preview-border: #302c43;
+  --preview-accent: #a78bfa;
+}
+.julia-preview-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  width: 23%;
+  padding: 12px 8px;
+  border-right: 1px solid var(--preview-border);
+}
+.julia-preview-sidebar i {
+  height: 5px;
+  border-radius: 4px;
+  background: var(--preview-border);
+}
+.julia-preview-sidebar i:first-child {
+  width: 70%;
+  background: var(--preview-accent);
+  margin-bottom: 12px;
+}
+.julia-preview-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 15px;
+  padding-top: 8px;
+}
+.julia-preview-content > i {
+  width: 45%;
+  height: 7px;
+  background: var(--preview-accent);
+  border-radius: 4px;
+}
+.julia-preview-content > span {
+  display: flex;
+  gap: 8px;
+  height: 45px;
+}
+.julia-preview-content b {
+  flex: 1;
+  background: var(--preview-surface);
+  border: 1px solid var(--preview-border);
+  border-radius: 6px;
+}
+.julia-preview-content em {
+  height: 38px;
+  border-radius: 6px;
+  background: var(--preview-surface);
+  border-bottom: 3px solid var(--preview-accent);
+}
+.julia-metrics {
+  max-width: 1600px;
+  margin-inline: auto;
+  width: 100%;
+}
+.julia-metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.julia-stat {
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+}
+.julia-stat:first-child {
+  background: linear-gradient(135deg, var(--color-surface), var(--color-accent-soft));
+  border-color: var(--color-border-strong);
+}
+.julia-stat-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.julia-stat-value {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin-top: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.julia-stat:first-child .julia-stat-value {
+  color: var(--color-accent);
+}
+.julia-stat-note {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.julia-metrics-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.julia-metrics-body > .rounded-lg {
+  border-radius: 18px;
+  overflow: hidden;
+}
+.julia-metrics-body th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.julia-metrics-body tbody tr:hover {
+  background-color: var(--color-surface-elevated);
+}
+.julia-funnel-track {
+  height: 8px;
+  background: var(--color-surface-elevated);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.julia-funnel-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-400));
+}
+@media (max-width: 1000px) {
+  .julia-metrics-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .julia-metrics-summary {
+    gap: 10px;
+  }
+  .julia-stat {
+    padding: 16px;
+    border-radius: 14px;
+  }
+  .julia-stat-label {
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .julia-theme-option {
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .julia-funnel-fill {
+    transition: width 200ms ease;
+  }
+}
+
+html[data-julia-appearance="ocean"][data-theme="dark"][data-julia-appearance] body {
+  --color-bg: #07121b;
+  --color-surface: #0c1d28;
+  --color-surface-elevated: #102633;
+  --color-border: #234453;
+  --color-border-strong: #416777;
+}
+html[data-julia-appearance="blue"][data-theme="light"] body {
+  --color-bg: #f6f8fd;
+  --color-surface-elevated: #edf2fc;
+  --color-border: #dbe3f2;
+}
+html[data-julia-appearance="mint"][data-theme="light"] body {
+  --color-bg: #f4fbf8;
+  --color-surface-elevated: #eaf6f0;
+  --color-border: #d5e9e1;
+}
+html[data-julia-appearance="lilac"][data-theme="light"] body {
+  --color-bg: #faf7fe;
+  --color-surface-elevated: #f3edf9;
+  --color-border: #e8ddf2;
+}

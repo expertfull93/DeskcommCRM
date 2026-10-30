@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { APPEARANCE_KEY, readAppearance, type Appearance } from "@/lib/appearance";
 
 export type Theme = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
@@ -17,9 +18,35 @@ type ThemeContextValue = {
   resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
   toggle: () => void;
+  appearance: Appearance;
+  setAppearance: (appearance: Appearance) => void;
 };
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
+
+const appearanceListeners = new Set<() => void>();
+let cachedAppearance: Appearance | null = null;
+function appearanceSnapshot(): Appearance {
+  return (cachedAppearance ??= readAppearance());
+}
+function serverAppearanceSnapshot(): Appearance {
+  return "default";
+}
+function subscribeAppearance(listener: () => void) {
+  appearanceListeners.add(listener);
+  return () => {
+    appearanceListeners.delete(listener);
+  };
+}
+function saveAppearance(next: Appearance) {
+  cachedAppearance = next;
+  try {
+    window.localStorage.setItem(APPEARANCE_KEY, next);
+  } catch {
+    /* Session preference still works. */
+  }
+  appearanceListeners.forEach((listener) => listener());
+}
 
 function readStoredTheme(): Theme {
   if (typeof window === "undefined") return "system";
@@ -120,7 +147,16 @@ function inscreverEmSistema(ouvinte: Ouvinte): () => void {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const theme = React.useSyncExternalStore(inscreverEmTema, getTemaSnapshot, getTemaSnapshotDoServidor);
+  const appearance = React.useSyncExternalStore(
+    subscribeAppearance,
+    appearanceSnapshot,
+    serverAppearanceSnapshot,
+  );
+  const theme = React.useSyncExternalStore(
+    inscreverEmTema,
+    getTemaSnapshot,
+    getTemaSnapshotDoServidor,
+  );
   const systemTheme = React.useSyncExternalStore(
     inscreverEmSistema,
     getSistemaSnapshot,
@@ -138,6 +174,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyTheme(resolvedTheme);
   }, [resolvedTheme]);
 
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-julia-appearance", appearance);
+  }, [appearance]);
+
   const setTheme = React.useCallback((next: Theme) => {
     gravarTema(next);
   }, []);
@@ -149,8 +189,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = React.useMemo<ThemeContextValue>(
-    () => ({ theme, resolvedTheme, setTheme, toggle }),
-    [theme, resolvedTheme, setTheme, toggle],
+    () => ({ theme, resolvedTheme, setTheme, toggle, appearance, setAppearance: saveAppearance }),
+    [theme, resolvedTheme, setTheme, toggle, appearance],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
