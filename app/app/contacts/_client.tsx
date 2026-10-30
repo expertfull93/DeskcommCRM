@@ -5,7 +5,6 @@ import { Plus, DownloadSimple, MagnifyingGlass, UploadSimple, UsersThree, Arrows
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -427,10 +426,8 @@ export function ContactsListClient() {
       )}
 
       {q.isLoading ? (
-        <div className="space-y-2">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
+        <div role="status" className="py-6 text-xs text-muted-foreground">
+          {t("Carregando contatos…")}
         </div>
       ) : q.isError ? (
         <Card className="p-6 text-center">
